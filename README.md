@@ -3,6 +3,7 @@ Contains such features as:
 - Sending images to Divoom device
 - Sending gifs
 - Setting brightness
+
 Also small features which were used during development and testing
 - Creating binary files with gif content in Divoom compatible style
 - Creating gifs from png strips
