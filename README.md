@@ -8,7 +8,7 @@ Also small features which were used during development and testing
 - Creating gifs from png strips
 
 ---
-This project is fully inspired by this [project]([andreas-mausch/divoom-ditoo-pro-controller: Send Bluetooth commands directly to your device, no proprietary app required](https://github.com/andreas-mausch/divoom-ditoo-pro-controller)), but it was using some unsupported Rust library only for Linux. Now it is using only pyserial for communication
+This project is fully inspired by this [project](https://github.com/andreas-mausch/divoom-ditoo-pro-controller), but it was using some unsupported Rust library only for Linux. Now it is using only pyserial for communication
 
 ### Setup
 0. Connect your DivoomDitoo device over bluetooth. There is no matter which one you connect: Ditoo-Light or Ditoo-Audio.
@@ -155,3 +155,8 @@ payload = make_brightness_payload(50)
 packets = build_packet(Commands.Brightness, payload)
 device.send_packet(packets)
 ```
+---
+### Useful links
+- https://github.com/andreas-mausch/divoom-ditoo-pro-controller
+- https://docin.divoom-gz.com/web/#/5/146
+- https://github.com/RomRider/node-divoom-timebox-evo/blob/master/PROTOCOL.md
