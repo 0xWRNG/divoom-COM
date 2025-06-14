@@ -1,7 +1,7 @@
 {
     "port": "COM3",
     "baudrate": 128000,
-    "packet_timeout": 0.01,
-    "read_timeout": 0.25,
+    "packet_timeout": 0.7,
+    "read_timeout": 0.5,
     "debug_print": false
 }

@@ -7,7 +7,7 @@ from packet import build_packet
 from commands import Commands
 from image import image_to_payload
 from animation import gif_to_payload, read_divoom16
-from gif_utils import create_gif_from_strip
+from gif_utils import create_gif_from_strip, rotate_image_to_gif
 
 
 def main():
@@ -46,8 +46,13 @@ def main():
     make_divoom16.add_argument('output_path', type=str, help='Output .divoom16 file path')
 
     make_gif_from_strip = make_sub.add_parser('gif_from_strip', help='Makes gif 16 by 16 from strip of 16 by 16*X')
-    make_gif_from_strip.add_argument('gif_path', type=str, help='Path to result gif')
     make_gif_from_strip.add_argument('strip_path', type=str, help='Path to strip')
+    make_gif_from_strip.add_argument('gif_path', type=str, help='Path to result gif')
+
+    make_rotating_gif = make_sub.add_parser('rotating_gif', help='Makes image rotation')
+    make_rotating_gif.add_argument('image_path', type=str, help='Path to strip')
+    make_rotating_gif.add_argument('gif_path', type=str, help='Path to result gif')
+
     args = parser.parse_args()
 
     # --- Command execution ---
@@ -77,6 +82,10 @@ def main():
             gif_path = Path(args.gif_path)
             strip_path = Path(args.strip_path)
             create_gif_from_strip(path_to_strip=strip_path, output_gif_path=gif_path)
+        if args.make_type == 'rotating_gif':
+            gif_path = Path(args.gif_path)
+            image_path = Path(args.image_path)
+            rotate_image_to_gif(input_path=image_path, output_path=gif_path)
 
 
 if __name__ == "__main__":

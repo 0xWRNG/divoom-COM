@@ -23,6 +23,8 @@ This project is fully inspired by this [project](https://github.com/andreas-maus
     "debug_print": false  
 }
 ```
+> Note that you may need to adjust packet_timeout and read_timeout if you experiencing troubles with larger gifs 
+
 3. Install requirements for this project using:
 ```shell
 pip install -r requirements.txt
@@ -87,22 +89,33 @@ If you previously created `.divoom16` file, you can send it to your device
 ```
 As it was with gif file, you will see a progress bar, and if debug_print is on – packets content
 
-#### Making gifs out of png
-This tool was created while developing this project just for fun. But if you have a .png representing an animation as minecraft saves their animations; base picture size: 16x16, animation 16x512, you can use this:
-```
-python main.py make gif_from_strip examples/soul_fire.gif examples/soul_fire.png 
-```
-You will get an output like this
-```
-Gif saved: examples\soul_fire.gif
-```
-
 #### Setting screen brightness
 To control screen brightness use this:
 ```
 python main.py set brightness 50  
 ```
 where 50 – is brightness percentage
+
+### Making gifs out of png
+#### Make gif out of _long_ png
+This tool was created while developing this project just for fun. But if you have a .png representing an animation as minecraft saves their animations; base picture size: 16x16, animation 16x512, you can use this:
+```
+python main.py make gif_from_strip examples/soul_fire.png examples/soul_fire.gif 
+```
+You will get an output like this
+```
+Gif saved: examples\soul_fire.gif
+```
+
+#### Make gif by rotating png
+This tool rotates .png by Y axis:
+```
+python main.py make rotating_gif examples/diamond.png examples/diamond.gif 
+```
+You will get an output like this
+```
+Gif saved: examples\diamond.gif
+```
 
 ---
 ### Using pure code
