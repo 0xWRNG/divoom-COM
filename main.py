@@ -76,7 +76,7 @@ def main():
         if args.make_type == 'gif_from_strip':
             gif_path = Path(args.gif_path)
             strip_path = Path(args.strip_path)
-            create_gif_from_strip(strip_path, gif_path)
+            create_gif_from_strip(path_to_strip=strip_path, output_gif_path=gif_path)
 
 
 if __name__ == "__main__":

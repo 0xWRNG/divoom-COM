@@ -32,7 +32,7 @@ def gif_to_payload(gif_path, save_path=''):
         all_gif.extend(image.image_to_payload(image_or_path=gif))
 
     if save_path != '':
-        with open(os.path.basename(save_path), "wb") as f:
+        with open(save_path, "wb") as f:
             f.write(all_gif)
 
     return all_gif
