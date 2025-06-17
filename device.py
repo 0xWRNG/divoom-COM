@@ -16,6 +16,16 @@ def print_bytes(data):
             print_bytes(piece)
 
 
+def print_progress(sent, total):
+    percent = (sent / total) * 100
+    bar_len = 40
+    filled = int(bar_len * sent // total)
+    bar = '█' * filled + '-' * (bar_len - filled)
+    if percent != 100:
+        print(f'\r[{bar}] {percent:6.2f}% ({sent}/{total})', end='')
+        return
+    print(f'\r[{bar}] {percent:6.2f}% ({sent}/{total})')
+
 class DitooDevice:
     def __init__(self, port='COM3', baudrate=128000, packet_timeout=0.01, debug_print=False, read_timeout=0.25):
         self.port = port
@@ -55,15 +65,7 @@ class DitooDevice:
         total_size = sum(len(packet) for packet in packets)
         sent_size = 0
 
-        def print_progress(sent, total):
-            percent = (sent / total) * 100
-            bar_len = 40
-            filled = int(bar_len * sent // total)
-            bar = '█' * filled + '-' * (bar_len - filled)
-            if percent != 100:
-                print(f'\r[{bar}] {percent:6.2f}% ({sent}/{total} bytes)', end='')
-                return
-            print(f'\r[{bar}] {percent:6.2f}% ({sent}/{total} bytes)')
+
 
         first_packet = True
         for packet in packets:

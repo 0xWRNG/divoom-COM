@@ -32,10 +32,6 @@ def create_gif_from_strip(path_to_strip, output_gif_path, frame_size=(16, 16), d
 def rotate_image_to_gif(input_path, output_path="rotated_y.gif", step=5, duration=100, final_size=(16, 16), canvas_size=(64, 64)):
     front = Image.open(input_path).convert("RGB").resize(canvas_size, Image.BICUBIC)
     back = front.transpose(Image.FLIP_LEFT_RIGHT)
-    front.show()
-    back.show()
-
-
     def simulate_y_rotation(img: Image.Image, angle_deg: float, canvas_size=(64, 64)) -> Image.Image:
         angle_rad = math.radians(angle_deg)
         scale = abs(math.cos(angle_rad))

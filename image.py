@@ -3,6 +3,7 @@ from PIL import Image
 import numpy as np
 from pathlib import Path
 
+
 def create_bit_array(numbers, bits_per_num):
     if bits_per_num == 8:
         return bytes(bytearray(numbers[::-1]))

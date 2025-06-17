@@ -89,6 +89,17 @@ If you previously created `.divoom16` file, you can send it to your device
 [████████████████████████████████████████] 100.00% (24035/24035 bytes)
 ```
 As it was with gif file, you will see a progress bar, and if debug_print is on – packets content
+#### Compass command
+This command takes directory of pictures where 0 picture - is showing 180 degree angle. and the last one - 360-sector_size angle. Tracks cursor position and shows its angle on the device.
+```
+python main.py send compass examples/compass
+```
+#### Slideshow
+This command takes all images from directory and shows them as a sequence with chosen timeout
+```
+python main.py send slideshow examples/item 0.5 --loop=True
+```
+Where 0.5 — is a timeout, loop=True lets slideshow be cycled
 
 #### Setting screen brightness
 To control screen brightness use this:
