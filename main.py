@@ -67,6 +67,7 @@ def main():
     compass.add_argument('compass_path', type=str, help='Path to compass frames')
 
     keystrokes = live_sub.add_parser('keystrokes', help='Displaying keystokes mode')
+    keystrokes.add_argument('keys_images_directory', type=str, help='Path to keys images')
 
     args = parser.parse_args()
 
@@ -157,7 +158,10 @@ def main():
 
         elif args.live_type == 'keystrokes':
             from features.keystrokes import start_key_display
-            start_key_display(device)
+            if not os.path.isdir(args.keys_images_directory):
+                print(f'{Colors.FAIL.value}[X] Directory does not exist{Colors.ENDC.value}')
+                return
+            start_key_display(device, args.keys_images_directory)
 
 
 

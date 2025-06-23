@@ -10,7 +10,7 @@ from core.image import image_to_payload
 from core.packet import build_packet
 
 
-IMAGE_PATH = Path("examples/keys")
+
 FRAME_DURATION = 0.5
 KEY_WIDTH = 16
 KEY_HEIGHT = 16
@@ -34,46 +34,41 @@ MODIFIER_KEYS = {
 }
 
 key_aliases = {
-    'space': 'space',
-    'enter': 'enter',
-    'backspace': 'backspace',
-    'tab': 'tab',
-    'esc': 'esc',
+
     'right shift': 'shift',
     'right ctrl': 'ctrl',
     'right alt': 'alt',
-    'up': 'arrow_up',
-    'down': 'arrow_down',
-    'left': 'arrow_left',
-    'right': 'arrow_right',
     'home': 'hm',
     '/': 'slash',
     '\\': 'backslash',
     ':': 'colon',
-    ';': 'semicolon',
-    '\'': 'apostrophe',
     '"': 'quote',
-    ',': 'comma',
-    '`': 'backtick',
-    '~': 'tilde',
-    '-': 'minus',
-    '=': 'equal',
-    '+': 'plus',
     '*': 'asterisk',
     '<': 'less',
     '>': 'greater',
+    '?': 'question',
+    'page up': 'pu',
+    'page down': 'pd',
+    'insert': 'ins',
+    'delete': 'del',
+    'num lock': 'nl',
+    'print screen': 'ps',
+    'scroll lock': 'sl',
+    'pause': 'pb',
 }
 
 
 
-def load_all_key_images():
+def load_all_key_images(path = Path("assets/keys")):
     image_map = {}
-
-    for file in IMAGE_PATH.glob("*.png"):
+    if isinstance(path, str):
+        path = Path(path)
+    for file in path.glob("*.png"):
         name = file.stem.lower()
 
         image = Image.open(file).convert("L")
         image_map[name] = image
+    print(f"- Loaded {len(image_map)} keys")
 
     return image_map
 
@@ -111,26 +106,6 @@ def send_image(img, device):
     device.send_packet(packets)
 
 
-def show_key_animation(device, key_img, modifiers, delta):
-    colored = apply_mod_color(key_img, modifiers)
-    send_image(colored, device)
-
-    if delta < 0.1:
-        return
-
-    time.sleep(FRAME_DURATION)
-
-    darkened = ImageEnhance.Brightness(colored).enhance(0.5)
-    send_image(darkened, device)
-
-    if delta < 0.3:
-        return
-
-    time.sleep(FRAME_DURATION)
-
-    black = Image.new("RGB", (KEY_WIDTH, KEY_HEIGHT), "black")
-    send_image(black, device)
-
 
 def is_capslock_on():
     return bool(ctypes.WinDLL("User32.dll").GetKeyState(0x14) & 1)
@@ -156,14 +131,14 @@ def fade_out_worker(device, last_key_ref, last_sent_time_ref):
         time.sleep(0.05)
         if last_key_ref[0] is None:
             continue
-        if time.time() - last_sent_time_ref[0] >= 0.4:
+        if time.time() - last_sent_time_ref[0] >= 0.5:
             key = last_key_ref[0]
             key_img = get_image_for_event(key)
             if key_img:
                 modifiers = get_modifiers()
                 colored = apply_mod_color(key_img, modifiers)
 
-                for alpha in [0.7, 0.4, 0.1]:
+                for alpha in [0.7, 0.5,0.3, 0.1]:
                     dark = ImageEnhance.Brightness(colored).enhance(alpha)
                     send_image(dark, device)
                     time.sleep(0.07)
@@ -175,16 +150,15 @@ def fade_out_worker(device, last_key_ref, last_sent_time_ref):
             last_sent_time_ref[0] = 0
 
 
-def start_key_display(device):
+def start_key_display(device, path):
     global key_image_map
-    key_image_map = load_all_key_images()
+    key_image_map = load_all_key_images(path)
 
     print("[*] Pressed key display started")
 
     Thread(target=fade_out_worker, args=(device, last_key, last_sent_time), daemon=True).start()
     while True:
         event = keyboard.read_event()
-
         key = event.name.lower()
         if key in MODIFIER_KEYS:
             continue
@@ -202,6 +176,3 @@ def start_key_display(device):
             else:
                 last_sent_time[0] = time.time()
                 last_key[0] = key
-
-
-
