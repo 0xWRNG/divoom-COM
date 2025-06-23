@@ -1,6 +1,5 @@
 from PIL import Image, ImageSequence
-import image
-import os
+import core.image as image
 from pathlib import Path
 
 

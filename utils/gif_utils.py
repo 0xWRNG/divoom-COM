@@ -1,6 +1,7 @@
-from image import remove_alpha
-from PIL import Image, ImageOps
 import os
+
+from core.image import remove_alpha
+from PIL import Image
 import math
 
 

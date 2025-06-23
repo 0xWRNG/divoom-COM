@@ -2,29 +2,7 @@ import serial
 import time
 import json
 
-
-def print_bytes(data):
-    if isinstance(data, bytes | bytearray):
-        for i in range(0, len(data), 16):
-            chunk = data[i:i + 16]
-            print(' '.join(f'{b:02X}' for b in chunk))
-    elif isinstance(data, list):
-        piece_ind = 0
-        for piece in data:
-            print(f'-- Chunk {piece_ind} --')
-            piece_ind += 1
-            print_bytes(piece)
-
-
-def print_progress(sent, total):
-    percent = (sent / total) * 100
-    bar_len = 40
-    filled = int(bar_len * sent // total)
-    bar = '█' * filled + '-' * (bar_len - filled)
-    if percent != 100:
-        print(f'\r[{bar}] {percent:6.2f}% ({sent}/{total})', end='')
-        return
-    print(f'\r[{bar}] {percent:6.2f}% ({sent}/{total})')
+from utils.console_utils import *
 
 class DitooDevice:
     def __init__(self, port='COM3', baudrate=128000, packet_timeout=0.01, debug_print=False, read_timeout=0.25):
@@ -58,8 +36,10 @@ class DitooDevice:
             if self.debug:
                 print('- Sending single packet...')
                 print_bytes(packets)
-
-            self.ser.write(packets[0])
+            try:
+                self.ser.write(packets[0])
+            except serial.serialutil.SerialTimeoutException:
+                print('- Sending single packet failed, skipping...')
             return
 
         total_size = sum(len(packet) for packet in packets)
