@@ -1,21 +1,14 @@
-import math
 import os.path
 from pathlib import Path
 import argparse
-import pyautogui
-from screeninfo import get_monitors
-
-
 from PIL import Image
 
-from device import *
-from brightness import make_brightness_payload
-from packet import build_packet
-from commands import Commands
-from console_clrs import Colors
-from image import image_to_payload, remove_alpha
-from animation import gif_to_payload, read_divoom16
-from gif_utils import create_gif_from_strip, rotate_image_to_gif
+from core.device import *
+from core.packet import build_packet
+from core.commands import Commands
+from core.image import image_to_payload
+from features.animation import gif_to_payload, read_divoom16
+from utils.console_utils import Colors
 
 
 def main():
@@ -43,9 +36,6 @@ def main():
     send_image_slideshow.add_argument('timeout', type=float, help='Timeout in ms')
     send_image_slideshow.add_argument('--loop', required=False, type=bool, help='Loop slideshow')
 
-    compass = send_sub.add_parser('compass', help='Compass representing mouse position')
-    compass.add_argument('compass_path', type=str, help='Path to compass frames')
-
     # --- set ---
     set_cmd = top_level.add_parser('set', help='Set parameters on device')
     set_sub = set_cmd.add_subparsers(dest='set_type', required=True)
@@ -69,6 +59,14 @@ def main():
     make_rotating_gif.add_argument('image_path', type=str, help='Path to strip')
     make_rotating_gif.add_argument('gif_path', type=str, help='Path to result gif')
 
+    # --- live ---
+    live = top_level.add_parser('live', help='Live modes')
+    live_sub = live.add_subparsers(dest='live_type', required=True)
+
+    compass = live_sub.add_parser('compass', help='Compass representing mouse position')
+    compass.add_argument('compass_path', type=str, help='Path to compass frames')
+
+    keystrokes = live_sub.add_parser('keystrokes', help='Displaying keystokes mode')
 
     args = parser.parse_args()
 
@@ -112,46 +110,11 @@ def main():
                         time.sleep(args.timeout)
                 if args.loop is None or not args.loop:
                     break
-        elif args.send_type == 'compass':
-            compass_frames = []
-            compass_dir = args.compass_path
-            if not os.path.isdir(compass_dir):
-                print(f'{Colors.FAIL.value}[X] Directory does not exist{Colors.ENDC.value}')
-                return
-            for filename in os.listdir(compass_dir):
-                image_path = os.path.join(compass_dir, filename)
-                img = Image.open(image_path)
-                img =remove_alpha(img)
-                compass_frames.append(img)
-            monitors = get_monitors()
-
-            min_x = min(m.x for m in monitors)
-            min_y = min(m.y for m in monitors)
-            max_x = max(m.x + m.width for m in monitors)
-            max_y = max(m.y + m.height for m in monitors)
-
-            center_x = (min_x + max_x) // 2
-            center_y = (min_y + max_y) // 2
-            prev_sector = -1
-            while True:
-                mouse_x, mouse_y = pyautogui.position()
-                dx = mouse_x - center_x
-                dy = mouse_y - center_y
-
-                angle_rad = math.atan2(dy, dx)
-                angle_deg = math.degrees(angle_rad)
-                angle_deg = (angle_deg -90 + 360) % 360
-                sector_count = len(compass_frames)
-                sector = int(angle_deg / (360 / sector_count)) % sector_count
-                if sector != prev_sector:
-                    packets = build_packet(Commands.Image, payload=image_to_payload(image_or_path=compass_frames[sector]))
-                    device.send_packet(packets)
-                prev_sector = sector
-
         if len(packets) != 0:
             device.send_packet(packets)
 
     elif args.category == 'set':
+        from features.brightness import make_brightness_payload
         if args.set_type == 'brightness':
             if 0 > args.brightness > 100:
                 print('[X] Incorrect brightness value')
@@ -170,6 +133,7 @@ def main():
                 save_path=Path(args.output_path)
             )
         if args.make_type == 'gif_from_strip':
+            from utils.gif_utils import create_gif_from_strip
             if not os.path.isfile(args.strip_path):
                 print(f'{Colors.FAIL.value}[X] File does not exist{Colors.ENDC.value}')
                 return
@@ -177,12 +141,25 @@ def main():
             strip_path = Path(args.strip_path)
             create_gif_from_strip(path_to_strip=strip_path, output_gif_path=gif_path)
         if args.make_type == 'rotating_gif':
+            from utils.gif_utils import rotate_image_to_gif
             if not os.path.isfile(args.image_path):
                 print(f'{Colors.FAIL.value}[X] File does not exist{Colors.ENDC.value}')
                 return
             gif_path = Path(args.gif_path)
             image_path = Path(args.image_path)
             rotate_image_to_gif(input_path=image_path, output_path=gif_path)
+    elif args.category == 'live':
+        device = DitooDevice.from_json('config.json')
+
+        if args.live_type == 'compass':
+            from features.compass import start_compass_display
+            start_compass_display(device, args.compass_path)
+
+        elif args.live_type == 'keystrokes':
+            from features.keystrokes import start_key_display
+            start_key_display(device)
+
+
 
 
 if __name__ == "__main__":
