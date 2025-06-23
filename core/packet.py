@@ -1,5 +1,4 @@
-from commands import Commands
-
+from core.commands import Commands
 header = b'\x01'
 footer = b'\x02'
 

@@ -31,7 +31,9 @@ This project is fully inspired by this [project](https://github.com/andreas-maus
 pip install -r requirements.txt
 ```
 
-## CLI Usage
+# CLI Usage
+
+## Send commands
 ### sending .gif
 
 This command will form packet sequence including packet-request, which will inform the device about packet sequence to be sended
@@ -45,7 +47,7 @@ You will see a progress bar showing how many bytes were sended
 ```
 if `debug_print` is enabled you will also see the contents of the packets
 
-#### Sending pictures
+### Sending pictures
 
 It will form a packet  containing a content of a picture with some Divoom header, and send it to the device
 ```
@@ -72,6 +74,48 @@ AA AA 9A 99 99 A9 AA AA AA AA AA AA AA AA AA AA
 FE 53 02
 ```
 
+
+### Sending .divoom16 file
+
+If you previously created `.divoom16` file, you can send it to your device
+```
+(.venv) PS E:\divoom-COM> python main.py send divoom16 examples/rickroll.divoom16
+[████████████████████████████████████████] 100.00% (24035/24035 bytes)
+```
+As it was with gif file, you will see a progress bar, and if debug_print is on – packets content
+
+### Slideshow
+This command takes all images from directory and shows them as a sequence with chosen timeout
+```
+python main.py send slideshow examples/item 0.5 --loop=True
+```
+Where 0.5 — is a timeout, loop=True lets slideshow be cycled
+
+---
+## Live commands
+### Compass command
+This command takes directory of pictures where 0 picture - is showing 180 degree angle. and the last one - 360-sector_size angle. Tracks cursor position and shows its angle on the device.
+```
+python main.py live compass examples/compass
+```
+### Live keystrokes visualizing
+By executing this command you will get pressed keys displayed on your device
+```
+python main.py live keystrokes
+```
+for now we use default directory from assets/keys
+
+---
+## Set commands
+### Setting screen brightness
+To control screen brightness use this:
+```
+python main.py set brightness 50  
+```
+where 50 – is brightness percentage
+
+---
+## Make commands
 #### Making .divoom16 file
 
 If you don't what to create packet sequences every time, you can make a `.divoom16` file. This was inspired by project metioned in description. This file contains bytes of original gif in a Divoom format. May save some time for big gifs
@@ -80,33 +124,6 @@ If you don't what to create packet sequences every time, you can make a `.divoom
 python main.py make divoom16 examples/fire.gif examples/fire.divoom16
 ```
 where first arg – original file, second – where file will be saved.
-
-#### Sending .divoom16 file
-
-If you previously created `.divoom16` file, you can send it to your device
-```
-(.venv) PS E:\divoom-COM> python main.py send divoom16 examples/rickroll.divoom16
-[████████████████████████████████████████] 100.00% (24035/24035 bytes)
-```
-As it was with gif file, you will see a progress bar, and if debug_print is on – packets content
-#### Compass command
-This command takes directory of pictures where 0 picture - is showing 180 degree angle. and the last one - 360-sector_size angle. Tracks cursor position and shows its angle on the device.
-```
-python main.py send compass examples/compass
-```
-#### Slideshow
-This command takes all images from directory and shows them as a sequence with chosen timeout
-```
-python main.py send slideshow examples/item 0.5 --loop=True
-```
-Where 0.5 — is a timeout, loop=True lets slideshow be cycled
-
-#### Setting screen brightness
-To control screen brightness use this:
-```
-python main.py set brightness 50  
-```
-where 50 – is brightness percentage
 
 ### Making gifs out of png
 #### Make gif out of _long_ png
@@ -130,7 +147,7 @@ Gif saved: examples\diamond.gif
 ```
 
 ---
-### Using pure code
+## Using pure code
 
 If you want to create something by yourself, there is breif explanation how to:
 
